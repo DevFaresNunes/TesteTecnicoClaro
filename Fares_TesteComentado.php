@@ -36,56 +36,54 @@ function consultarAPI($ticket = '')
     $context = stream_context_create($options);
     $response = @file_get_contents($url, false, $context);
 
-    if ($response === false) 
-    {
-        // Tratamento de erros na requisição da API
-        if (http_response_code() === 500) 
-        {
-            // Se o código de resposta for 500, diz "a API está indisponível"
-            echo "A API está indisponível.";
-        } 
-        elseif (http_response_code() === 404) 
-        {
-            // Se o código de resposta for 404, diz "a API pode ter mudado de endereço"
-            echo "A API pode ter mudado de endereço.";
+    if ($responseCode === 200) 
+    { // Sucesso na requisição da API
+        $data = json_decode($response, true);
+
+        if (is_array($data) || is_object($data)) 
+        { // Verifica se $data é um array ou objeto
+            echo "<table border='1'>";
+            echo "<tr><th>Ticket</th><th>Natureza</th><th>Descrição</th><th>Aceitar</th></tr>";
+
+            foreach ($data as $item) 
+            {
+                if (empty($ticket) || $ticket == $item['ticket']) 
+                {
+                    echo "<tr>";
+                    echo "<td>{$item['ticket']}</td>";
+                    echo "<td>{$item['natureza']}</td>";
+                    echo "<td>{$item['descricao']}</td>";
+                    echo "<td>";
+                    if ($item['natureza'] === 'CORRETIVA') 
+                    { // Botão "Aceitar" com função JS
+                        echo "<button onclick=\"aceitarTicket('{$item['ticket']}')\">Aceitar</button>";
+                    } 
+                    else 
+                    { // Botão "Não Aceitar" com mensagem de alerta JS
+                        echo "<button onclick=\"alert('Ticket não aceito devido à sua natureza')\">Não Aceitar</button>";
+                    }
+                    echo "</td>";
+                    echo "</tr>";
+                }
+            }
+            echo "</table>";
         } 
         else 
         {
-            // Outros erros na requisição da API
-            echo "Erro na requisição da API.";
+            echo "Erro na requisição da API. Os dados não estão no formato esperado.";
         }
     } 
+    elseif ($responseCode === 500) 
+    { // Se o código de resposta for 500, a API está indisponível
+        echo "A API está indisponível.";
+    } 
+    elseif ($responseCode === 404) 
+    { // Se o código de resposta for 404, a API pode ter mudado de endereço
+        echo "A API pode ter mudado de endereço.";
+    } 
     else 
-    {
-        // Sucesso na requisição da API (Código 200)
-        $data = json_decode($response, true);
-        echo "<table border='1'>";
-        echo "<tr><th>Ticket</th><th>Natureza</th><th>Descrição</th><th>Aceitar</th></tr>";
-        
-        foreach ($data as $item) 
-        {
-            if (empty($ticket) || $ticket == $item['ticket']) 
-            {
-                echo "<tr>";
-                echo "<td>{$item['ticket']}</td>";
-                echo "<td>{$item['natureza']}</td>";
-                echo "<td>{$item['descricao']}</td>";
-                echo "<td>";
-                if ($item['natureza'] === 'CORRETIVA') 
-                {
-                    // Botão "Aceitar" com função JS
-                    echo "<button onclick=\"aceitarTicket('{$item['ticket']}')\">Aceitar</button>";
-                } 
-                else 
-                {
-                    // Botão "Não Aceitar" com mensagem de alerta JS
-                    echo "<button onclick=\"alert('Ticket não aceito devido à sua natureza')\">Não Aceitar</button>";
-                }
-                echo "</td>";
-                echo "</tr>";
-            }
-        }
-        echo "</table>";
+    { // Outros erros na requisição da API
+        echo "Erro na requisição da API. Código de resposta: " . $responseCode;
     }
 }
 
