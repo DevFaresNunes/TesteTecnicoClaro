@@ -57,7 +57,7 @@ function consultarAPI($ticket = '')
     } 
     else 
     {
-        // Sucesso na requisição à API
+        // Sucesso na requisição à API (Código 200)
         $data = json_decode($response, true);
         echo "<table border='1'>";
         echo "<tr><th>Ticket</th><th>Natureza</th><th>Descrição</th><th>Aceitar</th></tr>";
