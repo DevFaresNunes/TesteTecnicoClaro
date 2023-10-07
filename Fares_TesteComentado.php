@@ -32,7 +32,7 @@ function consultarAPI($ticket = '')
         ],
     ];
 
-    // Realiza a requisição à API
+    // Realiza a requisição da API
     $context = stream_context_create($options);
     $response = @file_get_contents($url, false, $context);
 
@@ -51,13 +51,13 @@ function consultarAPI($ticket = '')
         } 
         else 
         {
-            // Outros erros na requisição à API
+            // Outros erros na requisição da API
             echo "Erro na requisição da API.";
         }
     } 
     else 
     {
-        // Sucesso na requisição à API (Código 200)
+        // Sucesso na requisição da API (Código 200)
         $data = json_decode($response, true);
         echo "<table border='1'>";
         echo "<tr><th>Ticket</th><th>Natureza</th><th>Descrição</th><th>Aceitar</th></tr>";
